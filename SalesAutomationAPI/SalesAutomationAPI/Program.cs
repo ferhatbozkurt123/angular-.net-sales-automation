@@ -3,39 +3,49 @@ using SalesAutomationAPI.Data;
 using SalesAutomationAPI.Models;
 using SalesAutomationAPI.Repositories;
 using SalesAutomationAPI.Services;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Port ayarını başlangıçta ekle - HTTP kullanımını etkinleştir
+builder.WebHost.UseUrls("http://localhost:7294");
+
 // Add services to the container.
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
+// CORS Policy - Güncellendi
+builder.Services.AddCors(options =>
 {
-    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.SetIsOriginAllowed(_ => true)
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
+    });
 });
 
 // DbContext Configuration
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SalesDbConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Repository Dependencies
 builder.Services.AddScoped<IKategorilerRepository, KategorilerRepository>();
 builder.Services.AddScoped<IUrunlerRepository, UrunlerRepository>();
 builder.Services.AddScoped<ISatislarRepository, SatislarRepository>();
 builder.Services.AddScoped<ISatisDetaylariRepository, SatisDetaylariRepository>();
+builder.Services.AddScoped<ICarilerRepository, CarilerRepository>();
+builder.Services.AddScoped<ICariHareketlerRepository, CariHareketlerRepository>();
+builder.Services.AddScoped<ITedariklerRepository, TedariklerRepository>();
 
 // Service Dependencies
 builder.Services.AddScoped<IUrunlerService, UrunlerService>();
 builder.Services.AddScoped<ISatisService, SatisService>();
-
-// CORS Policy
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
-    });
-});
+builder.Services.AddScoped<ITedarikService, TedarikService>();
 
 // Swagger/OpenAPI Configuration
 builder.Services.AddEndpointsApiExplorer();
@@ -50,13 +60,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 app.UseCors();
 
-app.UseAuthorization();
-
 app.MapControllers();
+
+// SPA için fallback route
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

@@ -1,31 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\PC\\Desktop\\satışyönetimi\\SalesAutomationAPI\\SalesAutomationAPI\\SalesAutomationAPI.csproj": {}
+    "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/SalesAutomationAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\PC\\Desktop\\satışyönetimi\\SalesAutomationAPI\\SalesAutomationAPI\\SalesAutomationAPI.csproj": {
+    "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/SalesAutomationAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\PC\\Desktop\\satışyönetimi\\SalesAutomationAPI\\SalesAutomationAPI\\SalesAutomationAPI.csproj",
+        "projectUniqueName": "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/SalesAutomationAPI.csproj",
         "projectName": "SalesAutomationAPI",
-        "projectPath": "C:\\Users\\PC\\Desktop\\satışyönetimi\\SalesAutomationAPI\\SalesAutomationAPI\\SalesAutomationAPI.csproj",
-        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\PC\\Desktop\\satışyönetimi\\SalesAutomationAPI\\SalesAutomationAPI\\obj\\",
+        "projectPath": "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/SalesAutomationAPI.csproj",
+        "packagesPath": "/Users/ferhatbozkurt/.nuget/packages/",
+        "outputPath": "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/ferhatbozkurt/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -42,9 +36,8 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "all"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+          "auditMode": "direct"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -64,11 +57,21 @@
               "target": "Package",
               "version": "[9.0.1, )"
             },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.1, )"
+            },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.1, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.12, )",
+              "autoReferenced": true
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -86,6 +89,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.osx-x64",
+              "version": "[8.0.12, 8.0.12]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.osx-x64",
+              "version": "[8.0.12, 8.0.12]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.osx-x64",
+              "version": "[8.0.12, 8.0.12]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -94,7 +111,12 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.405/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "osx-x64": {
+          "#import": []
         }
       }
     }

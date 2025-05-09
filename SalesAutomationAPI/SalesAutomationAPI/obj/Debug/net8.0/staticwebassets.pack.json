@@ -1,31 +1,27 @@
 {
   "Files": [
     {
-      "Id": "C:\\Users\\PC\\Desktop\\satışyönetimi\\SalesAutomationAPI\\SalesAutomationAPI\\wwwroot\\images\\products\\ea7e7ecc-5489-46ce-8912-f4e8c9cee5a3_9593775751218.jpg",
-      "PackagePath": "staticwebassets\\images\\products\\ea7e7ecc-5489-46ce-8912-f4e8c9cee5a3_9593775751218.jpg"
+      "Id": "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/wwwroot/images/products/ea7e7ecc-5489-46ce-8912-f4e8c9cee5a3_9593775751218.jpg",
+      "PackagePath": "staticwebassets/images/products/ea7e7ecc-5489-46ce-8912-f4e8c9cee5a3_9593775751218.jpg"
     },
     {
-      "Id": "C:\\Users\\PC\\Desktop\\satışyönetimi\\SalesAutomationAPI\\SalesAutomationAPI\\wwwroot\\uploads\\e8d24491-ef7d-4e0f-b515-b9b2fbd2bd69.png",
-      "PackagePath": "staticwebassets\\uploads\\e8d24491-ef7d-4e0f-b515-b9b2fbd2bd69.png"
+      "Id": "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/wwwroot/uploads/e8d24491-ef7d-4e0f-b515-b9b2fbd2bd69.png",
+      "PackagePath": "staticwebassets/uploads/e8d24491-ef7d-4e0f-b515-b9b2fbd2bd69.png"
     },
     {
-      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.SalesAutomationAPI.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
-      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
-    },
-    {
-      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.SalesAutomationAPI.Microsoft.AspNetCore.StaticWebAssets.props",
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.SalesAutomationAPI.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },
     {
-      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.SalesAutomationAPI.props",
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.SalesAutomationAPI.props",
       "PackagePath": "build\\SalesAutomationAPI.props"
     },
     {
-      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.SalesAutomationAPI.props",
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.SalesAutomationAPI.props",
       "PackagePath": "buildMultiTargeting\\SalesAutomationAPI.props"
     },
     {
-      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.SalesAutomationAPI.props",
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.SalesAutomationAPI.props",
       "PackagePath": "buildTransitive\\SalesAutomationAPI.props"
     }
   ],

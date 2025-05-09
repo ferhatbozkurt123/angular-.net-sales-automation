@@ -36,7 +36,7 @@ export interface CreateProductDto {
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'https://localhost:7294/api';
+  private apiUrl = 'http://localhost:7294/api';
 
   constructor(private http: HttpClient) { }
 

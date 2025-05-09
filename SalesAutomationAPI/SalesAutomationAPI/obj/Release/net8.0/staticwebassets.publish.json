@@ -1,0 +1,58 @@
+{
+  "Version": 1,
+  "Hash": "VQhy8Ys9NaECuGycgzmGVMGumavzjWO3lTZgeOl8vjM=",
+  "Source": "SalesAutomationAPI",
+  "BasePath": "_content/SalesAutomationAPI",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "SalesAutomationAPI/wwwroot",
+      "Source": "SalesAutomationAPI",
+      "ContentRoot": "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/wwwroot/",
+      "BasePath": "_content/SalesAutomationAPI",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/wwwroot/images/products/ea7e7ecc-5489-46ce-8912-f4e8c9cee5a3_9593775751218.jpg",
+      "SourceId": "SalesAutomationAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/wwwroot/",
+      "BasePath": "_content/SalesAutomationAPI",
+      "RelativePath": "images/products/ea7e7ecc-5489-46ce-8912-f4e8c9cee5a3_9593775751218.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images/products/ea7e7ecc-5489-46ce-8912-f4e8c9cee5a3_9593775751218.jpg"
+    },
+    {
+      "Identity": "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/wwwroot/uploads/e8d24491-ef7d-4e0f-b515-b9b2fbd2bd69.png",
+      "SourceId": "SalesAutomationAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/ferhatbozkurt/Downloads/satisyonetimi - Kopya/SalesAutomationAPI/SalesAutomationAPI/wwwroot/",
+      "BasePath": "_content/SalesAutomationAPI",
+      "RelativePath": "uploads/e8d24491-ef7d-4e0f-b515-b9b2fbd2bd69.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/uploads/e8d24491-ef7d-4e0f-b515-b9b2fbd2bd69.png"
+    }
+  ]
+}

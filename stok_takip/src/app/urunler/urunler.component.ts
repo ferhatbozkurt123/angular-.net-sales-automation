@@ -18,6 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterModule, Routes } from '@angular/router';
+import { CategoryAddComponent } from '../category-add/category-add.component';
 
 interface CartItem {
   id: number;
@@ -51,7 +52,8 @@ interface Category {
     MatSelectModule,
     CartComponent,
     ReportComponent,
-    ProductFormComponent
+    ProductFormComponent,
+    CategoryAddComponent
   ],
   templateUrl: './urunler.component.html',
   styleUrls: ['./urunler.component.scss']
@@ -148,21 +150,14 @@ export class UrunlerComponent implements OnInit {
     );
   }
 
-  openReportPopup(): void {
-    this.dialog.open(ReportComponent, {
-      width: '800px'
-    });
-  }
+ 
 
   openSalesPopup(): void {
     this.router.navigate(['/satislar']);
   }
 
-  addProduct(): void {
-    this.dialog.open(ProductFormComponent, {
-      width: '600px'
-    });
-  }
+
+
 
   editProduct(product: Product): void {
     const dialogRef = this.dialog.open(ProductFormComponent, {

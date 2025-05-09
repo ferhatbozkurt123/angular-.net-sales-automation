@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -9,6 +9,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SalesService, Sale } from '../../services/sales.service';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sales-list',
@@ -22,7 +24,8 @@ import { SalesService, Sale } from '../../services/sales.service';
     MatCardModule,
     MatChipsModule,
     MatSnackBarModule,
-    MatTooltipModule
+    MatTooltipModule,
+    ReactiveFormsModule
   ],
   templateUrl: './sales-list.component.html',
   styleUrls: ['./sales-list.component.scss']
@@ -32,21 +35,36 @@ export class SalesListComponent implements OnInit {
   filteredSales: Sale[] = [];
   selectedPeriod: 'all' | 'day' | 'week' | 'month' | 'year' = 'all';
   displayedColumns: string[] = ['satisId', 'musteri', 'satisTarihi', 'toplamTutar', 'actions'];
+  searchControl = new FormControl('');
 
   constructor(
     private salesService: SalesService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadSales();
+    
+    // Arama filtresini dinle
+    this.searchControl.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(searchTerm => {
+        if (searchTerm !== null) {  // null kontrolü ekleyin
+          this.filterSales(searchTerm);
+        }
+      });
   }
 
   loadSales(): void {
     this.salesService.getSales().subscribe({
       next: (data) => {
         this.satislar = data;
-        this.filteredSales = data;
+        this.filteredSales = data;  // İlk yüklemede tüm verileri göster
+        console.log('Yüklenen satışlar:', this.satislar); // Debug için
       },
       error: (error) => {
         console.error('Satışlar yüklenirken hata oluştu:', error);
@@ -59,8 +77,8 @@ export class SalesListComponent implements OnInit {
     if (confirm('Bu satışı silmek istediğinizden emin misiniz?')) {
       this.salesService.deleteSale(id).subscribe({
         next: () => {
-          this.satislar = this.satislar.filter(s => s.satisId !== id);
-          this.filteredSales = this.filteredSales.filter(s => s.satisId !== id);
+          this.satislar = this.satislar.filter(s => s.satisID !== id);
+          this.filteredSales = this.filteredSales.filter(s => s.satisID !== id);
           this.showSuccess('Satış başarıyla silindi');
         },
         error: (error) => {
@@ -161,5 +179,31 @@ export class SalesListComponent implements OnInit {
       verticalPosition: 'top',
       panelClass: ['error-snackbar']
     });
+  }
+
+  filterSales(searchTerm: string) {
+    console.log('Arama terimi:', searchTerm);
+    console.log('Filtreleme öncesi satışlar:', this.satislar);
+
+    if (!searchTerm?.trim()) {
+      this.filteredSales = [...this.satislar];
+      this.cdr.detectChanges();
+      return;
+    }
+
+    searchTerm = searchTerm.toLowerCase().trim();
+    this.filteredSales = this.satislar.filter(sale => {
+      if (!sale || !sale.musteri) {
+        return false;
+      }
+      
+      const musteriAdi = sale.musteri.toLowerCase();
+      const isMatch = musteriAdi.includes(searchTerm);
+      console.log(`Müşteri: ${musteriAdi}, Eşleşme: ${isMatch}`);
+      return isMatch;
+    });
+
+    console.log('Filtrelenen satışlar:', this.filteredSales);
+    this.cdr.detectChanges();
   }
 } 

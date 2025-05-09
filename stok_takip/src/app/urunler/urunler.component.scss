@@ -26,12 +26,12 @@
 
     /* Input alanındaki yazı rengini siyah yapmak */
     ::ng-deep .mat-input-element {
-      color: #000;
+      color: #040404;
     }
 
     /* Placeholder yazılarının rengini siyah yapmak */
     ::ng-deep .mat-placeholder {
-      color: #000 !important;
+      color: #060606 !important;
     }
   }
 }
@@ -226,10 +226,28 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #000000;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #000000;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  button {
+    min-width: 150px;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
 }

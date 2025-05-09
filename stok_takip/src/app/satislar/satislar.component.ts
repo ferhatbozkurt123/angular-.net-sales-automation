@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,14 +9,18 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { SalesService, Sale } from '../services/sales.service';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-satislar',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    RouterModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -24,109 +28,90 @@ import { SalesService, Sale } from '../services/sales.service';
     MatTabsModule,
     MatChipsModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule
   ],
   template: `
-    <div class="sales-container">
-      <div class="summary-cards">
-        <mat-card class="summary-card" (click)="filterByPeriod('daily')">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon>today</mat-icon>
-              Günlük Satışlar
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <h2 class="amount">₺{{dailyTotal | number:'1.2-2'}}</h2>
-            <p class="count">{{dailySales}} Satış</p>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="summary-card" (click)="filterByPeriod('weekly')">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon>date_range</mat-icon>
-              Haftalık Satışlar
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <h2 class="amount">₺{{weeklyTotal | number:'1.2-2'}}</h2>
-            <p class="count">{{weeklySales}} Satış</p>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="summary-card" (click)="filterByPeriod('monthly')">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon>calendar_month</mat-icon>
-              Aylık Satışlar
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <h2 class="amount">₺{{monthlyTotal | number:'1.2-2'}}</h2>
-            <p class="count">{{monthlySales}} Satış</p>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="summary-card" (click)="filterByPeriod('yearly')">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon>calendar_today</mat-icon>
-              Yıllık Satışlar
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <h2 class="amount">₺{{yearlyTotal | number:'1.2-2'}}</h2>
-            <p class="count">{{yearlySales}} Satış</p>
-          </mat-card-content>
-        </mat-card>
+    <div class="container mt-4">
+      <div class="header-section">
+        <h2>Satış Listesi</h2>
+        <div class="period-filters">
+          <button mat-raised-button color="primary" [routerLink]="['/urunler']">
+            <mat-icon>inventory</mat-icon>
+            Geri Dön
+          </button>
+          <button mat-stroked-button 
+                  [class.active]="selectedPeriod === 'day'" 
+                  (click)="filterByPeriod('day')">
+            <mat-icon>today</mat-icon>
+            Günlük
+          </button>
+          <button mat-stroked-button 
+                  [class.active]="selectedPeriod === 'week'" 
+                  (click)="filterByPeriod('week')">
+            <mat-icon>view_week</mat-icon>
+            Haftalık
+          </button>
+          <button mat-stroked-button 
+                  [class.active]="selectedPeriod === 'month'" 
+                  (click)="filterByPeriod('month')">
+            <mat-icon>calendar_today</mat-icon>
+            Aylık
+          </button>
+          <button mat-stroked-button 
+                  [class.active]="selectedPeriod === 'year'" 
+                  (click)="filterByPeriod('year')">
+            <mat-icon>calendar_view_month</mat-icon>
+            Yıllık
+          </button>
+        </div>
       </div>
 
-      <mat-card class="sales-table-card">
-        <mat-card-header>
-          <mat-card-title>Satış Geçmişi</mat-card-title>
-          <div class="period-filters">
-            <mat-chip-listbox [(ngModel)]="selectedPeriod" (selectionChange)="onPeriodChange($event)">
-              <mat-chip-option value="all">Tümü</mat-chip-option>
-              <mat-chip-option value="daily">Günlük</mat-chip-option>
-              <mat-chip-option value="weekly">Haftalık</mat-chip-option>
-              <mat-chip-option value="monthly">Aylık</mat-chip-option>
-              <mat-chip-option value="yearly">Yıllık</mat-chip-option>
-            </mat-chip-listbox>
-          </div>
-        </mat-card-header>
+      <mat-card class="sales-card">
         <mat-card-content>
+          <div class="search-section">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Müşteri Ara</mat-label>
+              <input matInput [formControl]="searchControl" placeholder="Müşteri adı ile ara...">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+          </div>
+
           <table mat-table [dataSource]="filteredSales" class="sales-table">
             <ng-container matColumnDef="satisID">
-              <th mat-header-cell *matHeaderCellDef>Satış No</th>
-              <td mat-cell *matCellDef="let sale">{{sale.satisID}}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="satisTarihi">
-              <th mat-header-cell *matHeaderCellDef>Tarih</th>
-              <td mat-cell *matCellDef="let sale">{{sale.satisTarihi | date:'dd/MM/yyyy HH:mm'}}</td>
+              <th mat-header-cell *matHeaderCellDef>Satış ID</th>
+              <td mat-cell *matCellDef="let satis">{{satis.satisID}}</td>
             </ng-container>
 
             <ng-container matColumnDef="musteri">
               <th mat-header-cell *matHeaderCellDef>Müşteri</th>
-              <td mat-cell *matCellDef="let sale">{{sale.musteri}}</td>
+              <td mat-cell *matCellDef="let satis">{{satis.musteri}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="satisTarihi">
+              <th mat-header-cell *matHeaderCellDef>Tarih</th>
+              <td mat-cell *matCellDef="let satis">{{satis.satisTarihi | date:'medium'}}</td>
             </ng-container>
 
             <ng-container matColumnDef="toplamTutar">
-              <th mat-header-cell *matHeaderCellDef>Tutar</th>
-              <td mat-cell *matCellDef="let sale">₺{{sale.toplamTutar | number:'1.2-2'}}</td>
+              <th mat-header-cell *matHeaderCellDef>Toplam Tutar</th>
+              <td mat-cell *matCellDef="let satis" class="amount-cell">
+                {{satis.toplamTutar | currency:'TRY':'symbol-narrow':'1.2-2'}}
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>İşlemler</th>
-              <td mat-cell *matCellDef="let sale">
-                <button mat-icon-button color="primary" (click)="viewSaleDetails(sale)" matTooltip="Detayları Görüntüle">
+              <td mat-cell *matCellDef="let satis">
+                <button mat-icon-button color="primary" (click)="viewSaleDetails(satis)" matTooltip="Detay">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button mat-icon-button color="accent" (click)="editSale(sale)" matTooltip="Düzenle">
+                <button mat-icon-button color="accent" (click)="editSale(satis)" matTooltip="Düzenle">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button color="warn" (click)="deleteSale(sale.satisID)" matTooltip="Sil">
+                <button mat-icon-button color="warn" (click)="deleteSale(satis.satisID)" matTooltip="Sil">
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>
@@ -140,250 +125,248 @@ import { SalesService, Sale } from '../services/sales.service';
     </div>
   `,
   styles: [`
-    .sales-container {
-      padding: 20px;
+    .container {
       max-width: 1200px;
       margin: 0 auto;
+      padding: 24px;
+      background-color: #ffffff;
     }
 
-    .summary-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .summary-card {
-      padding: 20px;
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-    }
-
-    .summary-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
-
-    .summary-card mat-card-header {
-      margin-bottom: 15px;
-    }
-
-    .summary-card mat-card-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.2em;
-      color: #333;
-    }
-
-    .summary-card mat-icon {
-      color: #1976d2;
-    }
-
-    .amount {
-      font-size: 2em;
-      font-weight: 600;
-      color: #1976d2;
-      margin: 10px 0;
-    }
-
-    .count {
-      color: #666;
-      font-size: 1.1em;
-    }
-
-    .sales-table-card {
-      margin-top: 20px;
-    }
-
-    .sales-table-card mat-card-header {
+    .header-section {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+
+      h2 {
+        color: #000000;
+        font-weight: 600;
+        font-size: 1.5rem;
+        margin: 0;
+      }
     }
 
     .period-filters {
-      margin: 15px 0;
+      display: flex;
+      gap: 12px;
+
+      button {
+        color: #000000;
+        background-color: #ffffff;
+        border-color: #e0e0e0;
+        font-weight: 500;
+
+        &.active {
+          background-color: #ffffff;
+          color: #000000;
+          border-color: #000000;
+        }
+
+        mat-icon {
+          margin-right: 8px;
+          color: #000000;
+        }
+      }
+    }
+
+    .sales-card {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border: 1px solid #e0e0e0;
+    }
+
+    .search-section {
+      margin-bottom: 20px;
+
+      .search-field {
+        width: 100%;
+        max-width: 400px;
+
+        ::ng-deep .mat-form-field-outline {
+          color: #e0e0e0;
+        }
+
+        ::ng-deep .mat-form-field-label {
+          color: #000000;
+        }
+
+        input {
+          color: #000000;
+        }
+      }
     }
 
     .sales-table {
       width: 100%;
+      background-color: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+
+      th {
+        background-color: #ffffff;
+        color: #000000;
+        font-weight: 600;
+        padding: 16px;
+        font-size: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      td {
+        background-color: #ffffff;
+        padding: 12px 16px;
+        color: #000000;
+        font-weight: 500;
+        border-bottom: 1px solid #f5f5f5;
+      }
+
+      .amount-cell {
+        font-weight: 600;
+        color: #000000;
+      }
+
+      tr:hover {
+        background-color: #ffffff;
+      }
     }
 
     .mat-column-actions {
-      width: 150px;
+      width: 160px;
       text-align: center;
-    }
 
-    .mat-column-satisID {
-      width: 100px;
-    }
-
-    .mat-column-satisTarihi {
-      width: 180px;
-    }
-
-    .mat-column-toplamTutar {
-      width: 120px;
-      text-align: right;
-    }
-
-    tr.mat-row:hover {
-      background-color: #f5f5f5;
-    }
-
-    .mat-cell {
-      padding: 10px;
+      button {
+        margin: 0 4px;
+        color: #000000;
+        
+        .mat-icon {
+          color: #000000;
+        }
+      }
     }
   `]
 })
 export class SatislarComponent implements OnInit {
-  displayedColumns: string[] = ['satisID', 'satisTarihi', 'musteri', 'toplamTutar', 'actions'];
+  displayedColumns: string[] = ['satisID', 'musteri', 'satisTarihi', 'toplamTutar', 'actions'];
   sales: Sale[] = [];
   filteredSales: Sale[] = [];
   selectedPeriod: string = 'all';
-
-  // Summary metrics
-  dailyTotal: number = 0;
-  weeklyTotal: number = 0;
-  monthlyTotal: number = 0;
-  yearlyTotal: number = 0;
-  dailySales: number = 0;
-  weeklySales: number = 0;
-  monthlySales: number = 0;
-  yearlySales: number = 0;
+  searchControl = new FormControl('');
 
   constructor(
     private salesService: SalesService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.loadSales();
+    this.setupSearch();
+  }
+
+  private setupSearch() {
+    this.searchControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(searchTerm => {
+      console.log('Arama terimi:', searchTerm); // Debug için log
+      this.applyCurrentFilter();
+    });
   }
 
   loadSales() {
     this.salesService.getSales().subscribe({
-      next: (data: Sale[]) => {
+      next: (data) => {
+        console.log('Yüklenen satışlar:', data); // Debug için log
         this.sales = data;
         this.filteredSales = data;
-        this.calculateSummaries();
+        this.applyCurrentFilter();
       },
-      error: (error: Error) => {
-        console.error('Satışlar yüklenirken hata:', error);
+      error: (error) => {
+        console.error('Satışlar yüklenirken hata oluştu:', error);
         this.showError('Satışlar yüklenirken bir hata oluştu');
       }
     });
   }
 
-  calculateSummaries() {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay());
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const yearStart = new Date(now.getFullYear(), 0, 1);
+  filterSales(searchTerm: string) {
+    console.log('filterSales çağrıldı, terim:', searchTerm); // Debug için log
+    if (!searchTerm) {
+      this.filteredSales = this.applyPeriodFilter(this.sales);
+      return;
+    }
 
-    this.resetSummaries();
-
-    this.sales.forEach(sale => {
-      const saleDate = new Date(sale.satisTarihi);
-      
-      if (saleDate >= today) {
-        this.dailyTotal += sale.toplamTutar;
-        this.dailySales++;
-      }
-      
-      if (saleDate >= weekStart) {
-        this.weeklyTotal += sale.toplamTutar;
-        this.weeklySales++;
-      }
-      
-      if (saleDate >= monthStart) {
-        this.monthlyTotal += sale.toplamTutar;
-        this.monthlySales++;
-      }
-
-      if (saleDate >= yearStart) {
-        this.yearlyTotal += sale.toplamTutar;
-        this.yearlySales++;
-      }
-    });
-  }
-
-  resetSummaries() {
-    this.dailyTotal = 0;
-    this.weeklyTotal = 0;
-    this.monthlyTotal = 0;
-    this.yearlyTotal = 0;
-    this.dailySales = 0;
-    this.weeklySales = 0;
-    this.monthlySales = 0;
-    this.yearlySales = 0;
+    const filtered = this.sales.filter(sale => 
+      sale.musteri?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    console.log('Filtrelenmiş sonuçlar:', filtered); // Debug için log
+    this.filteredSales = this.applyPeriodFilter(filtered);
   }
 
   filterByPeriod(period: string) {
     this.selectedPeriod = period;
-    this.onPeriodChange({ value: period });
+    this.applyCurrentFilter();
   }
 
-  onPeriodChange(event: any) {
+  private applyCurrentFilter() {
+    const searchTerm = this.searchControl.value;
+    console.log('Mevcut arama terimi:', searchTerm); // Debug için log
+    
+    let filtered = [...this.sales];
+    
+    if (searchTerm) {
+      filtered = filtered.filter(sale => 
+        sale.musteri?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    console.log('Filtreleme sonrası:', filtered); // Debug için log
+    this.filteredSales = this.applyPeriodFilter(filtered);
+  }
+
+  private applyPeriodFilter(sales: Sale[]): Sale[] {
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay());
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const yearStart = new Date(now.getFullYear(), 0, 1);
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
     switch (this.selectedPeriod) {
-      case 'daily':
-        this.filteredSales = this.sales.filter(sale => 
-          new Date(sale.satisTarihi) >= today
-        );
-        break;
-      case 'weekly':
-        this.filteredSales = this.sales.filter(sale => 
-          new Date(sale.satisTarihi) >= weekStart
-        );
-        break;
-      case 'monthly':
-        this.filteredSales = this.sales.filter(sale => 
-          new Date(sale.satisTarihi) >= monthStart
-        );
-        break;
-      case 'yearly':
-        this.filteredSales = this.sales.filter(sale => 
-          new Date(sale.satisTarihi) >= yearStart
-        );
-        break;
+      case 'day':
+        return sales.filter(s => new Date(s.satisTarihi) >= startOfDay);
+      case 'week': {
+        const startOfWeek = new Date(startOfDay);
+        startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay());
+        return sales.filter(s => new Date(s.satisTarihi) >= startOfWeek);
+      }
+      case 'month': {
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        return sales.filter(s => new Date(s.satisTarihi) >= startOfMonth);
+      }
+      case 'year': {
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        return sales.filter(s => new Date(s.satisTarihi) >= startOfYear);
+      }
       default:
-        this.filteredSales = this.sales;
+        return sales;
     }
   }
 
   viewSaleDetails(sale: Sale) {
-    // TODO: Implement sale details dialog
-    console.log('Sale details:', sale);
+    this.router.navigate(['sales', 'sales-detail', sale.satisID]);
   }
 
   editSale(sale: Sale) {
-    // TODO: Implement sale edit dialog
-    console.log('Edit sale:', sale);
+    this.router.navigate(['sales', 'sales-update', sale.satisID]);
   }
 
   deleteSale(id: number) {
     if (confirm('Bu satışı silmek istediğinizden emin misiniz?')) {
       this.salesService.deleteSale(id).subscribe({
         next: () => {
-          this.sales = this.sales.filter(s => s.satisId !== id);
-          this.filteredSales = this.filteredSales.filter(s => s.satisId !== id);
-          this.calculateSummaries();
+          this.sales = this.sales.filter(s => s.satisID !== id);
+          this.applyCurrentFilter();
           this.showSuccess('Satış başarıyla silindi');
         },
-        error: (error: Error) => {
-          console.error('Satış silinirken hata:', error);
+        error: (error) => {
+          console.error('Satış silinirken hata oluştu:', error);
           this.showError('Satış silinirken bir hata oluştu');
         }
       });
@@ -391,18 +374,18 @@ export class SatislarComponent implements OnInit {
   }
 
   private showSuccess(message: string) {
-    this.snackBar.open(message, 'Tamam', {
+    this.snackBar.open(message, 'Kapat', {
       duration: 3000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom'
+      horizontalPosition: 'end',
+      verticalPosition: 'top'
     });
   }
 
   private showError(message: string) {
-    this.snackBar.open(message, 'Tamam', {
-      duration: 3000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
+    this.snackBar.open(message, 'Kapat', {
+      duration: 5000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
       panelClass: ['error-snackbar']
     });
   }

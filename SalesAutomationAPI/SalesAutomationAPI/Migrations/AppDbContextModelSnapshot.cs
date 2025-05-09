@@ -22,7 +22,101 @@ namespace SalesAutomationAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Kategoriler", b =>
+            modelBuilder.Entity("SalesAutomationAPI.Models.CariHareketler", b =>
+                {
+                    b.Property<int>("HareketID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HareketID"));
+
+                    b.Property<string>("Aciklama")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("BelgeNo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("CariID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("IslemTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IslemTuru")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<decimal>("Tutar")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("VadeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("HareketID");
+
+                    b.HasIndex("CariID");
+
+                    b.ToTable("CariHareketler");
+                });
+
+            modelBuilder.Entity("SalesAutomationAPI.Models.Cariler", b =>
+                {
+                    b.Property<int>("CariID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CariID"));
+
+                    b.Property<string>("Adres")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("Bakiye")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("GuncellemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("OlusturulmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Telefon")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Tip")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Unvan")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("VergiDairesi")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("VergiNo")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("CariID");
+
+                    b.ToTable("Cariler");
+                });
+
+            modelBuilder.Entity("SalesAutomationAPI.Models.Kategoriler", b =>
                 {
                     b.Property<int>("KategoriID")
                         .ValueGeneratedOnAdd()
@@ -50,6 +144,38 @@ namespace SalesAutomationAPI.Migrations
                     b.ToTable("Kategoriler");
                 });
 
+            modelBuilder.Entity("SalesAutomationAPI.Models.SatisDetaylari", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("BirimFiyat")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Miktar")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SatisId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ToplamFiyat")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UrunId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SatisId");
+
+                    b.HasIndex("UrunId");
+
+                    b.ToTable("SatisDetaylari");
+                });
+
             modelBuilder.Entity("SalesAutomationAPI.Models.Satislar", b =>
                 {
                     b.Property<int>("SatisID")
@@ -58,14 +184,9 @@ namespace SalesAutomationAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SatisID"));
 
-                    b.Property<decimal>("BirimFiyat")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Miktar")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SatisFiyati")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Musteri")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("SatisTarihi")
                         .HasColumnType("datetime2");
@@ -73,12 +194,7 @@ namespace SalesAutomationAPI.Migrations
                     b.Property<decimal>("ToplamTutar")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("UrunID")
-                        .HasColumnType("int");
-
                     b.HasKey("SatisID");
-
-                    b.HasIndex("UrunID");
 
                     b.ToTable("Satislar");
                 });
@@ -92,7 +208,6 @@ namespace SalesAutomationAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UrunID"));
 
                     b.Property<string>("Aciklama")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Fiyat")
@@ -108,7 +223,6 @@ namespace SalesAutomationAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Ozellikler")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StokMiktari")
@@ -120,7 +234,6 @@ namespace SalesAutomationAPI.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("UrunGorseli")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UrunID");
@@ -130,25 +243,59 @@ namespace SalesAutomationAPI.Migrations
                     b.ToTable("Urunler");
                 });
 
-            modelBuilder.Entity("SalesAutomationAPI.Models.Satislar", b =>
+            modelBuilder.Entity("SalesAutomationAPI.Models.CariHareketler", b =>
                 {
+                    b.HasOne("SalesAutomationAPI.Models.Cariler", "Cari")
+                        .WithMany("CariHareketler")
+                        .HasForeignKey("CariID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cari");
+                });
+
+            modelBuilder.Entity("SalesAutomationAPI.Models.SatisDetaylari", b =>
+                {
+                    b.HasOne("SalesAutomationAPI.Models.Satislar", "Satis")
+                        .WithMany("SatisDetaylari")
+                        .HasForeignKey("SatisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SalesAutomationAPI.Models.Urunler", "Urun")
                         .WithMany()
-                        .HasForeignKey("UrunID")
+                        .HasForeignKey("UrunId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Satis");
 
                     b.Navigation("Urun");
                 });
 
             modelBuilder.Entity("SalesAutomationAPI.Models.Urunler", b =>
                 {
-                    b.HasOne("Kategoriler", "Kategori")
-                        .WithMany()
+                    b.HasOne("SalesAutomationAPI.Models.Kategoriler", "Kategori")
+                        .WithMany("Urunler")
                         .HasForeignKey("KategoriID")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Kategori");
+                });
+
+            modelBuilder.Entity("SalesAutomationAPI.Models.Cariler", b =>
+                {
+                    b.Navigation("CariHareketler");
+                });
+
+            modelBuilder.Entity("SalesAutomationAPI.Models.Kategoriler", b =>
+                {
+                    b.Navigation("Urunler");
+                });
+
+            modelBuilder.Entity("SalesAutomationAPI.Models.Satislar", b =>
+                {
+                    b.Navigation("SatisDetaylari");
                 });
 #pragma warning restore 612, 618
         }

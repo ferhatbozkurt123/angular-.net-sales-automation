@@ -14,7 +14,7 @@ import { SatisOlustur } from '../../models/satis.model';
       @if (satis) {
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h3>Satış Düzenle #{{ satis.satisId }}</h3>
+            <h3>Satış Düzenle #{{ satis.satisID }}</h3>
             <button class="btn btn-primary" routerLink="/satislar">Listeye Dön</button>
           </div>
           <div class="card-body">
@@ -160,12 +160,13 @@ export class SalesUpdateComponent implements OnInit {
   addProduct(): void {
     if (this.satis) {
       this.satis.satisDetaylari.push({
-        satisDetayId: 0,
-        satisId: this.satis.satisId,
+        id: 0,
+        satisId: this.satis.satisID,
         urunId: 0,
         miktar: 1,
         birimFiyat: 0,
-        toplamFiyat: 0
+        toplamFiyat: 0,
+        urunAdi: ''
       });
     }
   }
@@ -191,7 +192,7 @@ export class SalesUpdateComponent implements OnInit {
       }))
     };
 
-    this.salesService.updateSale(this.satis.satisId, updateDto).subscribe({
+    this.salesService.updateSale(this.satis.satisID, updateDto).subscribe({
       next: () => {
         this.router.navigate(['/satislar']);
       },

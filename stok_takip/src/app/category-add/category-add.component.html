@@ -1,1 +1,46 @@
-<p>category-add works!</p>
+<div class="category-add-container">
+  <h2>Yeni Kategori Ekle</h2>
+
+  <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="category-form">
+    <div class="form-group">
+      <label for="kategoriAdi">Kategori Adı:</label>
+      <input 
+        type="text" 
+        id="kategoriAdi" 
+        formControlName="kategoriAdi" 
+        class="form-control"
+        [class.is-invalid]="categoryForm.get('kategoriAdi')?.invalid && categoryForm.get('kategoriAdi')?.touched"
+      >
+      <div class="invalid-feedback" *ngIf="categoryForm.get('kategoriAdi')?.invalid && categoryForm.get('kategoriAdi')?.touched">
+        <span *ngIf="categoryForm.get('kategoriAdi')?.errors?.['required']">Kategori adı zorunludur</span>
+        <span *ngIf="categoryForm.get('kategoriAdi')?.errors?.['minlength']">Kategori adı en az 2 karakter olmalıdır</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="aciklama">Açıklama:</label>
+      <textarea 
+        id="aciklama" 
+        formControlName="aciklama" 
+        class="form-control"
+        rows="3"
+      ></textarea>
+    </div>
+
+    <div class="alert alert-danger" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <div class="alert alert-success" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <button 
+      type="submit" 
+      class="btn btn-primary"
+      [disabled]="categoryForm.invalid"
+    >
+      Kategori Ekle
+    </button>
+  </form>
+</div>

@@ -2,7 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\SalesAutomationAPI",
-    "\\SalesAutomationAPI\\Models"
+    "\\SalesAutomationAPI\\Models",
+    "\\SalesAutomationAPI\\Repositories"
   ],
   "SelectedNode": "\\SalesAutomationAPI.sln",
   "PreviewInSolutionExplorer": false

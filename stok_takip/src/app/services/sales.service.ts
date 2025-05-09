@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { SatisOlustur, SatisResponse, SatisGuncelle, SatisOzeti } from '../models/satis.model';
 
 export interface Sale {
-  satisId: number;
+  satisID: number;
   satisTarihi: string;
   musteri: string;
   toplamTutar: number;
@@ -12,19 +12,24 @@ export interface Sale {
 }
 
 export interface SaleDetail {
-  satisDetayId: number;
+  id: number;
   satisId: number;
   urunId: number;
   miktar: number;
   birimFiyat: number;
   toplamFiyat: number;
+  urunAdi: string;
+  urun?: {
+    urunAdi: string;
+  };
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class SalesService {
-  private apiUrl = 'https://localhost:7294/api/Satislar';
+  private apiUrl = 'http://localhost:7294/api/Satislar';
+  private detailsApiUrl = 'http://localhost:7294/api/SatisDetaylari';
 
   constructor(private http: HttpClient) { }
 
@@ -34,6 +39,10 @@ export class SalesService {
 
   getSaleById(id: number): Observable<Sale> {
     return this.http.get<Sale>(`${this.apiUrl}/${id}`);
+  }
+
+  getSaleDetailsBySaleId(satisId: number): Observable<SaleDetail[]> {
+    return this.http.get<SaleDetail[]>(`${this.detailsApiUrl}/satis/${satisId}`);
   }
 
   createSale(satis: SatisOlustur): Observable<Sale> {

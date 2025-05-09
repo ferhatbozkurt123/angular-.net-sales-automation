@@ -14,6 +14,9 @@ namespace SalesAutomationAPI.Data
         public DbSet<Urunler> Urunler { get; set; }
         public DbSet<Satislar> Satislar { get; set; }
         public DbSet<SatisDetaylari> SatisDetaylari { get; set; }
+        public DbSet<Cariler> Cariler { get; set; }
+        public DbSet<CariHareketler> CariHareketler { get; set; }
+        public DbSet<Tedarikler> Tedarikler { get; set; }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
         {
@@ -56,6 +59,47 @@ namespace SalesAutomationAPI.Data
             modelBuilder.Entity<SatisDetaylari>()
                 .Property(sd => sd.ToplamFiyat)
                 .HasColumnType("decimal(18,2)");
+
+            // Cariler ve CariHareketler arasındaki ilişki
+            modelBuilder.Entity<Cariler>(entity =>
+            {
+                entity.HasKey(e => e.CariID);
+                entity.Property(e => e.Unvan).IsRequired().HasMaxLength(150);
+                entity.Property(e => e.Bakiye).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.GuncellemeTarihi).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<CariHareketler>(entity =>
+            {
+                entity.HasKey(e => e.HareketID);
+                entity.Property(e => e.HareketID).UseIdentityColumn();
+                entity.Property(e => e.IslemTuru).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Tutar).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.IslemTarihi).HasColumnType("datetime");
+                entity.Property(e => e.Aciklama).HasMaxLength(500);
+                entity.Property(e => e.BelgeNo).HasMaxLength(50);
+
+                entity.HasOne(d => d.Cari)
+                    .WithMany(p => p.CariHareketler)
+                    .HasForeignKey(d => d.CariID)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Tedarikler konfigürasyonu
+            modelBuilder.Entity<Tedarikler>(entity =>
+            {
+                entity.HasKey(e => e.TedarikID);
+                entity.Property(e => e.TedarikciAdi).IsRequired().HasMaxLength(150);
+                entity.Property(e => e.BirimFiyat).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.TedarikMiktari).IsRequired();
+                entity.Property(e => e.TedarikTarihi).HasColumnType("datetime");
+                entity.Property(e => e.Aciklama).HasMaxLength(500);
+
+                entity.HasOne(d => d.Urun)
+                    .WithMany()
+                    .HasForeignKey(d => d.UrunID)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }

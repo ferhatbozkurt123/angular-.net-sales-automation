@@ -1,72 +1,86 @@
-<div class="container mt-4">
-  @if (loading) {
-    <mat-card>
-      <mat-card-content class="text-center p-4">
-        <p>Satış detayları yükleniyor...</p>
-      </mat-card-content>
-    </mat-card>
-  } @else if (error) {
+<div class="sale-detail-container">
+  <!-- Yükleme durumu -->
+  <div *ngIf="isLoading" class="loading-spinner">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p class="loading-text">Satış detayları yükleniyor...</p>
+  </div>
+
+  <!-- Hata durumu -->
+  <div *ngIf="error" class="error-message">
     <mat-card class="error-card">
-      <mat-card-content class="text-center p-4">
-        <mat-icon color="warn">error</mat-icon>
-        <p>Satış detayları yüklenemedi.</p>
-        <button mat-raised-button color="primary" routerLink="/satislar">
-          Listeye Dön
-        </button>
+      <mat-card-content>
+        <mat-icon color="warn">error_outline</mat-icon>
+        <p>{{ error }}</p>
       </mat-card-content>
     </mat-card>
-  } @else if (satis) {
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title class="d-flex justify-content-between align-items-center w-100">
-          <span>Satış Detayı #{{ satis.satisId }}</span>
-          <button mat-raised-button color="primary" routerLink="/satislar">
-            <mat-icon>arrow_back</mat-icon>
-            Listeye Dön
-          </button>
-        </mat-card-title>
-      </mat-card-header>
+  </div>
 
-      <mat-card-content class="p-4">
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <p><strong>Müşteri:</strong> {{ satis.musteri }}</p>
-            <p><strong>Satış Tarihi:</strong> {{ satis.satisTarihi | date:'medium' }}</p>
-          </div>
-          <div class="col-md-6 text-md-end">
-            <p class="total-amount">
-              <strong>Toplam Tutar:</strong>
-              <span>{{ satis.toplamTutar | currency:'TRY':'symbol-narrow':'1.2-2' }}</span>
-            </p>
-          </div>
+  <!-- Ana içerik -->
+   
+  <mat-card class="sale-info-card elevation-z4" *ngIf="!isLoading && !error">
+    <mat-card-header class="card-header">
+      <div class="header-content">
+        <mat-card-title>Satış Detayları</mat-card-title>
+        <mat-card-subtitle>Satış No: {{sale?.satisID}}</mat-card-subtitle>
+      </div>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="sale-info">
+        <div class="info-row">
+          <span class="info-label">Müşteri:</span>
+          <span class="info-value">{{sale?.musteri}}</span>
         </div>
+        <div class="info-row">
+          <span class="info-label">Satış Tarihi:</span>
+          <span class="info-value">{{sale?.satisTarihi | date:'medium'}}</span>
+        </div>
+        <div class="info-row total-amount">
+          <span class="info-label">Toplam Tutar:</span>
+          <span class="info-value">{{sale?.toplamTutar | currency:'TRY':'symbol-narrow':'1.2-2'}}</span>
+        </div>
+      </div>
 
-        <h3 class="mb-3">Satış Detayları</h3>
-        <table mat-table [dataSource]="satis.satisDetaylari" class="w-100">
+      <div class="sale-details-table">
+        <h3 class="table-title">Satış Kalemleri</h3>
+        <table mat-table [dataSource]="saleDetails" class="details-table">
+          <!-- Tablo sütunları aynı kalacak -->
           <ng-container matColumnDef="urunId">
             <th mat-header-cell *matHeaderCellDef>Ürün ID</th>
-            <td mat-cell *matCellDef="let detay">{{ detay.urunId }}</td>
+            <td mat-cell *matCellDef="let detail">{{detail.urunId}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="urunAdi">
+            <th mat-header-cell *matHeaderCellDef>Ürün Adı</th>
+            <td mat-cell *matCellDef="let detail">{{detail.urunAdi}}</td>
           </ng-container>
 
           <ng-container matColumnDef="miktar">
             <th mat-header-cell *matHeaderCellDef>Miktar</th>
-            <td mat-cell *matCellDef="let detay">{{ detay.miktar }}</td>
+            <td mat-cell *matCellDef="let detail">{{detail.miktar}}</td>
           </ng-container>
 
           <ng-container matColumnDef="birimFiyat">
             <th mat-header-cell *matHeaderCellDef>Birim Fiyat</th>
-            <td mat-cell *matCellDef="let detay">{{ detay.birimFiyat | currency:'TRY':'symbol-narrow':'1.2-2' }}</td>
+            <td mat-cell *matCellDef="let detail">{{detail.birimFiyat | currency:'TRY':'symbol-narrow':'1.2-2'}}</td>
           </ng-container>
 
           <ng-container matColumnDef="toplamFiyat">
             <th mat-header-cell *matHeaderCellDef>Toplam Fiyat</th>
-            <td mat-cell *matCellDef="let detay">{{ detay.toplamFiyat | currency:'TRY':'symbol-narrow':'1.2-2' }}</td>
+            <td mat-cell *matCellDef="let detail">{{detail.toplamFiyat | currency:'TRY':'symbol-narrow':'1.2-2'}}</td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="['urunId', 'miktar', 'birimFiyat', 'toplamFiyat']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['urunId', 'miktar', 'birimFiyat', 'toplamFiyat'];"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
-      </mat-card-content>
-    </mat-card>
-  }
-</div> 
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="primary" [routerLink]="['/sales']">
+        <mat-icon>arrow_back</mat-icon>
+        Geri Dön
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
