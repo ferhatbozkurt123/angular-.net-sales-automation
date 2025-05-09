@@ -9,6 +9,7 @@
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
+    <OutputPath>bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)</OutputPath>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
     <DebugType>None</DebugType>
